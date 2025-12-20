@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CityParkr</title>
+</head>
+<body>
+    <h1>Available Parking Spaces</h1>
+
+    {% if spaces %}
+        <ul>
+        {% for space in spaces %}
+            <li>
+                <strong>{{ space.title }}</strong> - {{ space.location }} - ${{ space.price_per_hour }}/hour
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No parking spaces available yet.</p>
+    {% endif %}
+</body>
+</html>
