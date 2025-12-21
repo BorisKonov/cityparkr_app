@@ -17,6 +17,8 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
+    sys.argv.append("runserver")
+
 
 if __name__ == "__main__":
     main()
