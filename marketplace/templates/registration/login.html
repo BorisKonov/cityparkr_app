@@ -12,12 +12,21 @@
     .auth-card{width:min(420px,100%);border:1px solid #eee;border-radius:18px;padding:22px;background:#fff;}
     .auth-title{margin:0 0 6px;font-size:22px;}
     .auth-sub{margin:0 0 18px;color:#666;font-size:14px;}
-    .auth-field{display:flex;flex-direction:column;gap:6px;margin:12px 0;}
+    .auth-field{display:flex;flex-direction:column;gap:6px;margin:12px 0;position:relative;}
     .auth-field input{padding:10px 12px;border:1px solid #ddd;border-radius:12px;font-size:14px;}
     .auth-actions{display:flex;gap:10px;align-items:center;margin-top:14px;}
     .auth-btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:999px;border:0;background:#ff385c;color:#fff;font-weight:700;cursor:pointer;}
     .auth-hint{color:#666;font-size:13px;}
     .auth-error{background:#fff5f5;border:1px solid #ffd1d1;color:#a32020;padding:10px 12px;border-radius:12px;margin-bottom:12px;font-size:14px;}
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 32px;
+        cursor: pointer;
+        font-size: 12px;
+        color: #666;
+        user-select: none;
+    }
   </style>
 </head>
 <body>
@@ -43,6 +52,7 @@
         <div class="auth-field">
           <label for="id_password">Password</label>
           {{ form.password }}
+          <span class="toggle-password" onclick="togglePassword()">Show</span>
         </div>
 
         <button class="auth-btn" type="submit">Log in</button>
@@ -53,5 +63,19 @@
       </form>
     </div>
   </div>
+
+  <script>
+    function togglePassword() {
+      var passwordInput = document.getElementById("id_password");
+      var toggleBtn = document.querySelector(".toggle-password");
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        toggleBtn.textContent = "Hide";
+      } else {
+        passwordInput.type = "password";
+        toggleBtn.textContent = "Show";
+      }
+    }
+  </script>
 </body>
 </html>
