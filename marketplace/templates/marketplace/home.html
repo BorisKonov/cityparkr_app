@@ -6,38 +6,57 @@
     <title>CityParkr</title>
 </head>
 <body>
-    {% if user.is_authenticated %}
-        <p>
-            Welcome, {{ user.username }} |
-            <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" style="background: none; border: none; color: blue; text-decoration: underline; cursor: pointer;">Logout</button>
-            </form>
-        </p>
-        <p>
-            <a href="{% url 'add_parking_space' %}">➕ Add Parking Space</a>
-        </p>
-    {% else %}
-        <p>
-            <a href="{% url 'login' %}">Login</a>
-        </p>
+    <header class="topbar">
+    <div class="brand">CityParkr</div>
 
-        <p>
-            <a href="{% url 'login' %}">Log in</a> to add a parking space.
-        </p>
-    {% endif %}
-    <h1>Available Parking Spaces</h1>
+    <div class="search-bar">
+        <span>Anywhere</span>
+        <span class="divider"></span>
+        <span>Any time</span>
+        <span class="divider"></span>
+        <span>Any price</span>
+        <span class="search-icon">🔍</span>
+    </div>
+
+    <a class="list-btn" href="{% url 'add_parking_space' %}">List your space</a>
+</header>
+
+<section class="hero">
+    <h1>Find parking like you book a stay</h1>
+    <p>Browse trusted parking spaces across the city.</p>
+</section>
+
+<main class="content">
+    <h2>Available parking spaces</h2>
 
     {% if spaces %}
-        <ul>
-        {% for space in spaces %}
-            <li>
-                <strong>{{ space.title }}</strong> - {{ space.location }} - ${{ space.price_per_hour }}/hour
-            </li>
-        {% endfor %}
-        </ul>
+        <div class="grid">
+            {% for space in spaces %}
+                <div class="card">
+                    <div class="card-image">
+                        <span class="badge">
+                            {% if space.is_available %}Available{% else %}Taken{% endif %}
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="card-header">
+                            <strong>{{ space.title }}</strong>
+                            <span class="price">${{ space.price_per_hour }}/h</span>
+                        </div>
+
+                        <div class="location">📍 {{ space.location }}</div>
+
+                        <p class="description">
+                            {{ space.description }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     {% else %}
-        <p>No parking spaces available yet.</p>
+        <p class="empty">No parking spaces available yet.</p>
     {% endif %}
+    </main>
 </body>
 </html>
