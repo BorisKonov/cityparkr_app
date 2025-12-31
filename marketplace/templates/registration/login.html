@@ -8,7 +8,7 @@
     <p style="color: var(--muted); margin-bottom: 24px;">Login to manage your bookings and listings.</p>
 
     {% if form.errors %}
-        <div style="background: #fff8f6; border: 1px solid #c13515; color: #c13515; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
+        <div style="background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
             Your username or password was incorrect. Please try again.
         </div>
     {% endif %}
@@ -35,6 +35,10 @@
             </p>
         {% endif %}
     </form>
+
+    <p style="text-align: center; margin-top: 24px; font-size: 14px;">
+        Don't have an account? <a href="{% url 'signup' %}" style="text-decoration: underline; font-weight: 600;">Sign up</a>
+    </p>
 </div>
 
 <script>

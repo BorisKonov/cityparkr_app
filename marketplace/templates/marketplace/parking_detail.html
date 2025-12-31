@@ -89,14 +89,18 @@
                     <form action="{% url 'book_parking_space' space.pk %}" method="post">
                         {% csrf_token %}
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #b0b0b0; border-radius: 8px; overflow: hidden; margin-bottom: 16px;">
-                            <div style="padding: 10px; border-right: 1px solid #b0b0b0;">
+                        <div style="border: 1px solid #b0b0b0; border-radius: 8px; margin-bottom: 16px;">
+                            <div style="padding: 10px; border-bottom: 1px solid #b0b0b0;">
                                 <label style="display:block; font-size:10px; font-weight:800; margin-bottom:2px; text-transform: uppercase;">Check-in</label>
-                                {{ booking_form.start_datetime }}
+                                <div class="custom-datetime-widget">
+                                    {{ booking_form.start_datetime }}
+                                </div>
                             </div>
                             <div style="padding: 10px;">
                                 <label style="display:block; font-size:10px; font-weight:800; margin-bottom:2px; text-transform: uppercase;">Check-out</label>
-                                {{ booking_form.end_datetime }}
+                                <div class="custom-datetime-widget">
+                                    {{ booking_form.end_datetime }}
+                                </div>
                             </div>
                         </div>
 
@@ -152,19 +156,22 @@
 </script>
 
 <style>
-    /* Custom style for date inputs to look cleaner inside the grid */
-    .booking-date-input {
+    .custom-datetime-widget {
+        display: flex;
+        gap: 8px;
+    }
+    .custom-datetime-widget > * {
         border: none !important;
         padding: 0 !important;
         font-size: 14px !important;
-        width: 100% !important;
         outline: none !important;
         background: transparent !important;
         font-family: inherit !important;
         color: var(--text) !important;
     }
-    .booking-date-input:focus {
-        box-shadow: none !important;
+    .custom-datetime-widget > select {
+        -webkit-appearance: none;
+        appearance: none;
     }
 </style>
 {% endblock %}

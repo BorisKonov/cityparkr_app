@@ -8,12 +8,13 @@
     <link rel="stylesheet" href="{% static 'marketplace/style.css' %}">
     {% block extra_css %}{% endblock %}
     <style>
-        /* Simple dropdown for user menu */
+        /* Robust dropdown for user menu */
         .user-menu-container {
             position: relative;
         }
         .dropdown-menu {
-            display: none;
+            visibility: hidden;
+            opacity: 0;
             position: absolute;
             top: 100%;
             right: 0;
@@ -25,6 +26,9 @@
             min-width: 200px;
             z-index: 1000;
             overflow: hidden;
+            transform-origin: top right;
+            transform: scale(0.95);
+            transition: opacity 0.1s ease, transform 0.1s ease, visibility 0.1s;
         }
         .dropdown-menu a {
             display: block;
@@ -37,7 +41,9 @@
             background: var(--bg-soft);
         }
         .user-menu-container:hover .dropdown-menu {
-            display: block;
+            visibility: visible;
+            opacity: 1;
+            transform: scale(1);
         }
     </style>
 </head>
@@ -77,7 +83,7 @@
 
                     <div class="dropdown-menu">
                         {% if user.is_authenticated %}
-                            <a href="{% url 'my_bookings' %}" style="font-weight: 600;">My Trips</a>
+                            <a href="{% url 'my_bookings' %}" style="font-weight: 600;">My Bookings</a>
                             {% if user.parkingspace_set.exists %}
                                 <a href="{% url 'host_bookings' %}">Manage Listings & Bookings</a>
                             {% else %}
@@ -87,7 +93,7 @@
                             <a href="{% url 'logout' %}">Log out</a>
                         {% else %}
                             <a href="{% url 'login' %}">Log in</a>
-                            <a href="#">Sign up</a>
+                            <a href="{% url 'signup' %}">Sign up</a>
                         {% endif %}
                     </div>
                 </div>

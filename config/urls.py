@@ -19,10 +19,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from marketplace import views as marketplace_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', include('marketplace.urls')),
+    
+    # Override default auth URLs
+    path("accounts/logout/", marketplace_views.custom_logout, name="logout"),
+    path("accounts/signup/", marketplace_views.signup, name="signup"),
     path("accounts/", include("django.contrib.auth.urls")),
 ]
 

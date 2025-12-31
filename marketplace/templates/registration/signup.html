@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - CityParkr{% endblock %}
+
+{% block content %}
+<div class="form-card" style="max-width: 480px;">
+    <h2 style="margin-bottom: 8px;">Create an Account</h2>
+    <p style="color: var(--muted); margin-bottom: 24px;">Join CityParkr to book and list parking spaces.</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small style="color:var(--muted); display:block; margin-top:4px;">{{ field.help_text|safe }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div style="color:#c13515; font-size:13px; margin-top:4px;">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn-primary">Sign Up</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 24px; font-size: 14px;">
+        Already have an account? <a href="{% url 'login' %}" style="text-decoration: underline; font-weight: 600;">Log in</a>
+    </p>
+</div>
+{% endblock %}

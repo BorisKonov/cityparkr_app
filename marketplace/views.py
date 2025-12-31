@@ -1,9 +1,26 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout, login
 from django.contrib import messages
 from .models import ParkingSpace, ParkingImage, Booking
-from .forms import ParkingSpaceForm, ParkingSpaceImageForm, BookingForm
+from .forms import ParkingSpaceForm, ParkingSpaceImageForm, BookingForm, CustomUserCreationForm
+
+def custom_logout(request):
+    logout(request)
+    return redirect('home')
+
+def signup(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Welcome to CityParkr!")
+            return redirect('home')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'registration/signup.html', {'form': form})
 
 def hello_parking(request):
     return HttpResponse("Hello Parking World!")
@@ -107,3 +124,14 @@ def decline_booking(request, booking_id):
 def my_bookings(request):
     bookings = Booking.objects.filter(renter=request.user).order_by('-created_at')
     return render(request, 'marketplace/my_bookings.html', {'bookings': bookings})
+
+@login_required
+def cancel_booking(request, booking_id):
+    booking = get_object_or_404(Booking, pk=booking_id, renter=request.user)
+    if booking.status == 'pending':
+        booking.status = 'cancelled'
+        booking.save()
+        messages.success(request, "Booking request cancelled.")
+    else:
+        messages.error(request, "Cannot cancel this booking.")
+    return redirect('my_bookings')
