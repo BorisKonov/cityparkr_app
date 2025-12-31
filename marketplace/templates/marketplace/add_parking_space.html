@@ -1,19 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'marketplace/style.css' %}">
-    <title>Add Parking Space</title>
-</head>
-<body>
-    <h1>Add a Parking Space</h1>
+{% extends 'base.html' %}
 
-    <form method="post">
+{% block title %}List your space - CityParkr{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h2 style="margin-bottom: 24px;">List your parking space</h2>
+
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save</button>
+
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small style="color:var(--muted); display:block; margin-top:4px;">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div style="color:#c13515; font-size:13px; margin-top:4px;">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        {% for field in image_form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                <small style="color:var(--muted); display:block; margin-top:4px;">Upload at least 3 photos.</small>
+                {% for error in field.errors %}
+                    <div style="color:#c13515; font-size:13px; margin-top:4px;">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn-primary">Save & List</button>
     </form>
 
-    <p><a href="{% url 'home' %}">Back to home</a></p>
-</body>
-</html>
+    <div style="margin-top: 24px; text-align: center;">
+        <a href="{% url 'home' %}" style="color: var(--text); text-decoration: underline; font-size: 14px;">Cancel</a>
+    </div>
+</div>
+{% endblock %}

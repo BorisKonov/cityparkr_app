@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Host Dashboard - CityParkr{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding-top: 32px;">
+    <h1 style="margin-bottom: 24px;">Manage Bookings</h1>
+
+    {% if messages %}
+        <div style="margin-bottom: 24px;">
+            {% for message in messages %}
+                <div style="padding: 12px; border-radius: 8px; margin-bottom: 8px;
+                    {% if message.tags == 'success' %}background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;
+                    {% elif message.tags == 'error' %}background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;
+                    {% else %}background: #f3f4f6; color: #1f2937; border: 1px solid #e5e7eb;{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if bookings %}
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            {% for booking in bookings %}
+                <div style="border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: #fff; box-shadow: var(--shadow-soft);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <div>
+                            <h3 style="margin-bottom: 4px;">{{ booking.parking_space.title }}</h3>
+                            <div style="color: var(--muted); font-size: 14px;">
+                                Renter: <strong>{{ booking.renter.username }}</strong>
+                            </div>
+                        </div>
+                        <span style="padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; text-transform: uppercase;
+                            {% if booking.status == 'pending' %}background: #fef3c7; color: #92400e;
+                            {% elif booking.status == 'approved' %}background: #d1fae5; color: #065f46;
+                            {% elif booking.status == 'declined' %}background: #f3f4f6; color: #4b5563;
+                            {% else %}background: #f3f4f6; color: #4b5563;{% endif %}">
+                            {{ booking.status }}
+                        </span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; font-size: 14px;">
+                        <div>
+                            <div style="color: var(--muted); font-size: 12px;">START</div>
+                            <div>{{ booking.start_datetime|date:"M d, Y H:i" }}</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--muted); font-size: 12px;">END</div>
+                            <div>{{ booking.end_datetime|date:"M d, Y H:i" }}</div>
+                        </div>
+                    </div>
+
+                    {% if booking.status == 'pending' %}
+                        <div style="display: flex; gap: 12px; margin-top: 16px; border-top: 1px solid var(--line); padding-top: 16px;">
+                            <form action="{% url 'approve_booking' booking.id %}" method="post" style="flex: 1;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-primary" style="width: 100%; background: var(--primary); border: none;">Approve</button>
+                            </form>
+                            <form action="{% url 'decline_booking' booking.id %}" method="post" style="flex: 1;">
+                                {% csrf_token %}
+                                <button type="submit" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--line); background: #fff; cursor: pointer; font-weight: 600;">Decline</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 0; border: 1px dashed var(--line); border-radius: 12px;">
+            <p style="color: var(--muted);">No bookings found.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

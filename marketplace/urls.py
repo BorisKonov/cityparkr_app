@@ -1,6 +1,18 @@
 from django.urls import path
 from . import views
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('add/', views.add_parking_space, name='add_parking_space'),
+    path('parking/<int:pk>/', views.parking_detail, name='parking_detail'),
+    path('parking/<int:pk>/book/', views.book_parking_space, name='book_parking_space'),
+    path('booking/<int:booking_id>/summary/', views.booking_summary, name='booking_summary'),
+    
+    # Host routes
+    path('host/bookings/', views.host_bookings, name='host_bookings'),
+    path('host/bookings/<int:booking_id>/approve/', views.approve_booking, name='approve_booking'),
+    path('host/bookings/<int:booking_id>/decline/', views.decline_booking, name='decline_booking'),
+    
+    # Renter routes
+    path('my-bookings/', views.my_bookings, name='my_bookings'),
 ]

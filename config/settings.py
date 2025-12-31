@@ -116,5 +116,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Google Maps API Key
+# Replace 'YOUR_API_KEY_HERE' with your actual Google Maps Geocoding API key
+GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE'

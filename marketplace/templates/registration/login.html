@@ -1,70 +1,43 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login | CityParkr</title>
+{% extends 'base.html' %}
 
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'marketplace/style.css' %}">
-  <style>
-    .auth-wrap{min-height:70vh;display:grid;place-items:center;padding:32px;}
-    .auth-card{width:min(420px,100%);border:1px solid #eee;border-radius:18px;padding:22px;background:#fff;}
-    .auth-title{margin:0 0 6px;font-size:22px;}
-    .auth-sub{margin:0 0 18px;color:#666;font-size:14px;}
-    .auth-field{display:flex;flex-direction:column;gap:6px;margin:12px 0;position:relative;}
-    .auth-field input{padding:10px 12px;border:1px solid #ddd;border-radius:12px;font-size:14px;}
-    .auth-actions{display:flex;gap:10px;align-items:center;margin-top:14px;}
-    .auth-btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:999px;border:0;background:#ff385c;color:#fff;font-weight:700;cursor:pointer;}
-    .auth-hint{color:#666;font-size:13px;}
-    .auth-error{background:#fff5f5;border:1px solid #ffd1d1;color:#a32020;padding:10px 12px;border-radius:12px;margin-bottom:12px;font-size:14px;}
-    .toggle-password {
-        position: absolute;
-        right: 10px;
-        top: 32px;
-        cursor: pointer;
-        font-size: 12px;
-        color: #666;
-        user-select: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="auth-wrap">
-    <div class="auth-card">
-      <h1 class="auth-title">Log in</h1>
-      <p class="auth-sub">You need to log in to list a parking space.</p>
+{% block title %}Log in - CityParkr{% endblock %}
 
-      {% if form.errors %}
-        <div class="auth-error">
-          Your username or password was incorrect. Please try again.
+{% block content %}
+<div class="form-card" style="max-width: 480px;">
+    <h2 style="margin-bottom: 8px;">Welcome back</h2>
+    <p style="color: var(--muted); margin-bottom: 24px;">Login to manage your bookings and listings.</p>
+
+    {% if form.errors %}
+        <div style="background: #fff8f6; border: 1px solid #c13515; color: #c13515; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
+            Your username or password was incorrect. Please try again.
         </div>
-      {% endif %}
+    {% endif %}
 
-      <form method="post">
+    <form method="post">
         {% csrf_token %}
 
-        <div class="auth-field">
-          <label for="id_username">Username</label>
-          {{ form.username }}
+        <div class="form-group">
+            <label for="id_username">Username</label>
+            {{ form.username }}
         </div>
 
-        <div class="auth-field">
-          <label for="id_password">Password</label>
-          {{ form.password }}
-          <span class="toggle-password" onclick="togglePassword()">Show</span>
+        <div class="form-group" style="position: relative;">
+            <label for="id_password">Password</label>
+            {{ form.password }}
+            <span class="toggle-password" onclick="togglePassword()" style="position: absolute; right: 12px; top: 38px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: underline;">Show</span>
         </div>
 
-        <button class="auth-btn" type="submit">Log in</button>
+        <button class="btn-primary" type="submit">Log in</button>
 
         {% if next %}
-          <p class="auth-hint">After logging in, you’ll be sent back to: <strong>{{ next }}</strong></p>
+            <p style="margin-top: 16px; font-size: 13px; color: var(--muted); text-align: center;">
+                Redirecting to: <strong>{{ next }}</strong>
+            </p>
         {% endif %}
-      </form>
-    </div>
-  </div>
+    </form>
+</div>
 
-  <script>
+<script>
     function togglePassword() {
       var passwordInput = document.getElementById("id_password");
       var toggleBtn = document.querySelector(".toggle-password");
@@ -76,6 +49,5 @@
         toggleBtn.textContent = "Show";
       }
     }
-  </script>
-</body>
-</html>
+</script>
+{% endblock %}

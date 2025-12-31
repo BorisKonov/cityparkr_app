@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - CityParkr{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding-top: 32px;">
+    <h1 style="margin-bottom: 24px;">My Trips</h1>
+
+    {% if bookings %}
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            {% for booking in bookings %}
+                <div style="border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: #fff; box-shadow: var(--shadow-soft); display: flex; gap: 20px;">
+
+                    <!-- Image Thumbnail -->
+                    <div style="width: 120px; height: 120px; flex-shrink: 0; border-radius: 8px; overflow: hidden; background: #f3f4f6;">
+                        {% if booking.parking_space.images.first %}
+                            <img src="{{ booking.parking_space.images.first.image.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            <div style="width: 100%; height: 100%; display: grid; place-items: center; color: var(--muted); font-size: 12px;">No Image</div>
+                        {% endif %}
+                    </div>
+
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                            <h3 style="margin: 0;">{{ booking.parking_space.title }}</h3>
+                            <span style="padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; text-transform: uppercase;
+                                {% if booking.status == 'pending' %}background: #fef3c7; color: #92400e;
+                                {% elif booking.status == 'approved' %}background: #d1fae5; color: #065f46;
+                                {% elif booking.status == 'declined' %}background: #f3f4f6; color: #4b5563;
+                                {% else %}background: #f3f4f6; color: #4b5563;{% endif %}">
+                                {{ booking.status }}
+                            </span>
+                        </div>
+
+                        <div style="color: var(--muted); font-size: 14px; margin-bottom: 12px;">
+                            {{ booking.parking_space.location }}
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px; background: var(--bg-soft); padding: 12px; border-radius: 8px;">
+                            <div>
+                                <div style="color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">Check-in</div>
+                                <div>{{ booking.start_datetime|date:"M d, H:i" }}</div>
+                            </div>
+                            <div>
+                                <div style="color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">Check-out</div>
+                                <div>{{ booking.end_datetime|date:"M d, H:i" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 0; border: 1px dashed var(--line); border-radius: 12px;">
+            <h3>No trips booked... yet!</h3>
+            <p style="color: var(--muted); margin-bottom: 24px;">Time to dust off your bags and start planning your next adventure.</p>
+            <a href="{% url 'home' %}" class="btn-primary" style="display: inline-block; width: auto;">Start searching</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ space.title }} - CityParkr{% endblock %}
+
+{% block content %}
+<div style="max-width: 1120px; margin: 0 auto; padding-top: 24px;">
+
+    <!-- Messages -->
+    {% if messages %}
+        <div style="margin-bottom: 24px;">
+            {% for message in messages %}
+                <div style="padding: 12px; border-radius: 8px; margin-bottom: 8px;
+                    {% if message.tags == 'success' %}background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;
+                    {% elif message.tags == 'error' %}background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;
+                    {% else %}background: #f3f4f6; color: #1f2937; border: 1px solid #e5e7eb;{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Header -->
+    <div style="margin-bottom: 24px;">
+        <h1 style="font-size: 26px; margin-bottom: 8px;">{{ space.title }}</h1>
+        <div style="display: flex; gap: 16px; font-size: 14px; color: var(--text); text-decoration: underline;">
+            <span>{{ space.location }}</span>
+        </div>
+    </div>
+
+    <!-- Image Grid -->
+    <div class="image-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px; border-radius: 12px; overflow: hidden; height: 400px; margin-bottom: 32px; cursor: pointer;">
+        {% with images=space.images.all %}
+            {% if images %}
+                <div style="height: 100%;" onclick="openLightbox(0)">
+                    <img src="{{ images.0.image.url }}" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'" alt="Main view">
+                </div>
+                <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 8px; height: 100%;">
+                    {% if images.1 %}
+                        <div style="height: 100%;" onclick="openLightbox(1)">
+                            <img src="{{ images.1.image.url }}" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'" alt="Side view">
+                        </div>
+                    {% else %}
+                        <div style="background: #f0f0f0;"></div>
+                    {% endif %}
+
+                    {% if images.2 %}
+                        <div style="height: 100%;" onclick="openLightbox(2)">
+                            <img src="{{ images.2.image.url }}" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'" alt="Detail view">
+                        </div>
+                    {% else %}
+                        <div style="background: #f0f0f0;"></div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div style="background: #e0e0e0; grid-column: span 2; display: grid; place-items: center; color: var(--muted);">
+                    No images available
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Content Split -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 64px;">
+
+        <!-- Left Column: Details -->
+        <div>
+            <div style="border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 24px;">
+                <h2 style="font-size: 22px; margin-bottom: 4px;">Hosted by {{ space.owner.username }}</h2>
+                <p style="color: var(--muted);">Joined in {{ space.owner.date_joined|date:"Y" }}</p>
+            </div>
+
+            <div style="margin-bottom: 32px;">
+                <h3 style="font-size: 20px; margin-bottom: 16px;">About this space</h3>
+                <p style="line-height: 1.6; color: var(--text);">{{ space.description }}</p>
+            </div>
+        </div>
+
+        <!-- Right Column: Booking Card -->
+        <div>
+            <div style="position: sticky; top: 100px; border: 1px solid var(--line); border-radius: 12px; padding: 24px; box-shadow: var(--shadow-soft); background: #fff;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px;">
+                    <div>
+                        <span style="font-size: 22px; font-weight: 700;">${{ space.price_per_hour }}</span>
+                        <span style="color: var(--text);"> hour</span>
+                    </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <form action="{% url 'book_parking_space' space.pk %}" method="post">
+                        {% csrf_token %}
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #b0b0b0; border-radius: 8px; overflow: hidden; margin-bottom: 16px;">
+                            <div style="padding: 10px; border-right: 1px solid #b0b0b0;">
+                                <label style="display:block; font-size:10px; font-weight:800; margin-bottom:2px; text-transform: uppercase;">Check-in</label>
+                                {{ booking_form.start_datetime }}
+                            </div>
+                            <div style="padding: 10px;">
+                                <label style="display:block; font-size:10px; font-weight:800; margin-bottom:2px; text-transform: uppercase;">Check-out</label>
+                                {{ booking_form.end_datetime }}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary" style="width: 100%; margin-bottom: 16px;">Request to reserve</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn-primary" style="display:flex; justify-content:center; width: 100%; margin-bottom: 16px;">Log in to reserve</a>
+                {% endif %}
+
+                <div style="text-align: center; font-size: 14px; color: var(--muted);">
+                    You won't be charged yet
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center;">
+    <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer;" onclick="closeLightbox()">&times;</span>
+    <img id="lightbox-img" src="" style="max-width: 90%; max-height: 90%; border-radius: 4px;">
+</div>
+
+<script>
+    // Store image URLs in a JS array
+    const images = [
+        {% for img in space.images.all %}
+            "{{ img.image.url }}",
+        {% endfor %}
+    ];
+
+    function openLightbox(index) {
+        if (images.length > index) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = images[index];
+            lightbox.style.display = 'flex';
+        }
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').style.display = 'none';
+    }
+
+    // Close on click outside image
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLightbox();
+        }
+    });
+</script>
+
+<style>
+    /* Custom style for date inputs to look cleaner inside the grid */
+    .booking-date-input {
+        border: none !important;
+        padding: 0 !important;
+        font-size: 14px !important;
+        width: 100% !important;
+        outline: none !important;
+        background: transparent !important;
+        font-family: inherit !important;
+        color: var(--text) !important;
+    }
+    .booking-date-input:focus {
+        box-shadow: none !important;
+    }
+</style>
+{% endblock %}
