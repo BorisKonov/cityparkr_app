@@ -1,9 +1,9 @@
 :root{
-  --bg: #FFFFFF;
-  --bg-soft: #F8FAFC;
+  --bg: #F1F5F9; /* Darker off-white background for the whole page */
+  --bg-soft: #E2E8F0;
   --text: #0F172A;
   --muted: #475569;
-  --line: #E2E8F0;
+  --line: #CBD5E1; /* Slightly darker lines */
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   --radius: 8px;
@@ -13,6 +13,8 @@
   --secondary: #14B8A6;
   --accent: #F59E0B;
   --font-stack: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --header-bg: #1e293b;
+  --header-text: #f1f5f9;
 }
 
 *{ box-sizing: border-box; }
@@ -54,8 +56,8 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #ffffff;
-  border-bottom: 1px solid var(--line);
+  background: var(--header-bg);
+  border-bottom: 1px solid #334155;
   height: 72px;
   display: flex;
   align-items: center;
@@ -72,7 +74,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--primary);
+  color: #ffffff;
   font-weight: 800;
   font-size: 20px;
 }
@@ -86,16 +88,16 @@ a:hover {
 .search-pill{
   display: flex;
   align-items: center;
-  border: 1px solid var(--line);
+  border: 1px solid #334155;
   border-radius: var(--radius-pill);
-  background: var(--bg-soft);
+  background: #334155;
   padding: 6px 6px 6px 20px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .search-pill:hover {
-    background: #fff;
+    background: #475569;
     box-shadow: var(--shadow-soft);
     border-color: var(--secondary);
 }
@@ -103,14 +105,14 @@ a:hover {
 .search-item {
     font-size: 14px;
     font-weight: 500;
-    color: var(--text);
+    color: var(--header-text);
     padding: 0 16px;
-    border-right: 1px solid var(--line);
+    border-right: 1px solid #475569;
 }
 
 .search-item:last-of-type {
     border-right: none;
-    color: var(--muted);
+    color: #94a3b8;
     font-weight: 400;
 }
 
@@ -140,31 +142,34 @@ a:hover {
     font-weight: 600;
     padding: 8px 16px;
     border-radius: 6px;
-    color: var(--text);
+    color: var(--header-text);
     transition: background 0.1s;
 }
 .nav-link:hover {
-    background: var(--bg-soft);
-    color: var(--primary);
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
 }
 
 .user-menu {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 4px 4px 4px 12px;
-    border: 1px solid var(--line);
-    border-radius: 21px;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 2px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
     cursor: pointer;
-    transition: box-shadow 0.2s;
-    background: #fff;
+    transition: all 0.2s;
+    background: transparent;
 }
 .user-menu:hover {
-    box-shadow: var(--shadow-soft);
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.1);
 }
 .avatar-placeholder {
-    width: 30px;
-    height: 30px;
+    width: 100%;
+    height: 100%;
     background: var(--muted);
     border-radius: 50%;
     color: white;
@@ -201,12 +206,14 @@ a:hover {
   flex-direction: column;
   gap: 12px;
   cursor: pointer;
-  background: #fff;
+  background: #fff; /* Cards stay white to pop against darker bg */
   border-radius: var(--radius);
   transition: transform 0.2s;
+  border: 1px solid var(--line);
 }
 .card:hover {
     transform: translateY(-2px);
+    box-shadow: var(--shadow);
 }
 
 .card-image{
@@ -322,29 +329,33 @@ input:focus, textarea:focus, select:focus {
     cursor: pointer;
     width: 100%;
     transition: background 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .btn-primary:hover {
     background: var(--primary-hover);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
 }
 
 .btn-primary:active {
     transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 /* --- Footer --- */
 .footer {
-    background: var(--bg-soft);
+    background: #F8FAFC; /* Lighter gray, distinct from header */
     border-top: 1px solid var(--line);
-    padding: 40px 0;
+    padding: 32px 0; /* Smaller padding */
     margin-top: auto;
+    color: var(--muted);
 }
 
 .footer-content {
     display: flex;
     justify-content: space-between;
     font-size: 14px;
-    color: var(--muted);
+    color: inherit;
 }
 
 /* --- Mobile --- */

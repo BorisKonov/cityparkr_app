@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Listing - CityParkr{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h2 style="margin-bottom: 24px;">Edit Listing: {{ space.title }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small style="color:var(--muted); display:block; margin-top:4px;">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div style="color:#c13515; font-size:13px; margin-top:4px;">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn-primary">Save Changes</button>
+    </form>
+
+    <div style="margin-top: 24px; text-align: center;">
+        <a href="{% url 'host_bookings' %}" style="color: var(--text); text-decoration: underline; font-size: 14px;">Cancel</a>
+    </div>
+</div>
+{% endblock %}

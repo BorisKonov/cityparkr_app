@@ -10,6 +10,9 @@ urlpatterns = [
     
     # Host routes
     path('host/bookings/', views.host_bookings, name='host_bookings'),
+    path('host/listings/<int:pk>/edit/', views.edit_parking_space, name='edit_parking_space'),
+    path('host/listings/<int:pk>/archive/', views.toggle_archive_listing, name='toggle_archive_listing'),
+    path('host/listings/<int:pk>/delete/', views.delete_parking_space, name='delete_parking_space'),
     path('host/bookings/<int:booking_id>/approve/', views.approve_booking, name='approve_booking'),
     path('host/bookings/<int:booking_id>/decline/', views.decline_booking, name='decline_booking'),
     

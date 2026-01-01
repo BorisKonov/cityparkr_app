@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, login
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .models import ParkingSpace, ParkingImage, Booking
 from .forms import ParkingSpaceForm, ParkingSpaceImageForm, BookingForm, CustomUserCreationForm
@@ -26,7 +27,8 @@ def hello_parking(request):
     return HttpResponse("Hello Parking World!")
 
 def home(request):
-    spaces = ParkingSpace.objects.all()
+    # Only show available spaces
+    spaces = ParkingSpace.objects.filter(is_available=True)
     return render(request, 'marketplace/home.html', {'spaces': spaces})
 
 def parking_detail(request, pk):
@@ -86,10 +88,45 @@ def add_parking_space(request):
     return render(request, 'marketplace/add_parking_space.html', {'form': form, 'image_form': image_form})
 
 @login_required
+def edit_parking_space(request, pk):
+    space = get_object_or_404(ParkingSpace, pk=pk, owner=request.user)
+    if request.method == 'POST':
+        form = ParkingSpaceForm(request.POST, instance=space)
+        # We don't handle image editing in this simple version, just details
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Listing updated successfully.")
+            return redirect('host_bookings')
+    else:
+        form = ParkingSpaceForm(instance=space)
+    
+    return render(request, 'marketplace/edit_parking_space.html', {'form': form, 'space': space})
+
+@login_required
+def toggle_archive_listing(request, pk):
+    space = get_object_or_404(ParkingSpace, pk=pk, owner=request.user)
+    if request.method == 'POST':
+        space.is_available = not space.is_available
+        space.save()
+        status = "Active" if space.is_available else "Archived"
+        messages.success(request, f"Listing is now {status}.")
+    return redirect('host_bookings')
+
+@login_required
 def host_bookings(request):
     # Get bookings for spaces owned by the current user
     bookings = Booking.objects.filter(parking_space__owner=request.user).order_by('status', '-created_at')
-    return render(request, 'marketplace/host_bookings.html', {'bookings': bookings})
+    # Also get the user's listings to manage them
+    my_listings = ParkingSpace.objects.filter(owner=request.user)
+    return render(request, 'marketplace/host_bookings.html', {'bookings': bookings, 'my_listings': my_listings})
+
+@login_required
+def delete_parking_space(request, pk):
+    space = get_object_or_404(ParkingSpace, pk=pk, owner=request.user)
+    if request.method == 'POST':
+        space.delete()
+        messages.success(request, "Listing deleted successfully.")
+    return redirect('host_bookings')
 
 @login_required
 def approve_booking(request, booking_id):

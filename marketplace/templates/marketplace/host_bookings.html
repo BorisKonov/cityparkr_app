@@ -4,7 +4,6 @@
 
 {% block content %}
 <div style="max-width: 800px; margin: 0 auto; padding-top: 32px;">
-    <h1 style="margin-bottom: 24px;">Manage Bookings</h1>
 
     {% if messages %}
         <div style="margin-bottom: 24px;">
@@ -19,6 +18,55 @@
         </div>
     {% endif %}
 
+    <!-- My Listings Section -->
+    <div style="margin-bottom: 48px;">
+        <h2 style="margin-bottom: 24px;">My Listings</h2>
+        {% if my_listings %}
+            <div style="display: grid; gap: 16px;">
+                {% for space in my_listings %}
+                    <div style="border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: #fff; display: flex; justify-content: space-between; align-items: center; {% if not space.is_available %}opacity: 0.7; background: #f9f9f9;{% endif %}">
+                        <div style="display: flex; gap: 16px; align-items: center;">
+                            <div style="width: 60px; height: 60px; background: #f3f4f6; border-radius: 8px; overflow: hidden;">
+                                {% if space.images.first %}
+                                    <img src="{{ space.images.first.image.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3 style="font-size: 16px; margin: 0 0 4px;">
+                                    {{ space.title }}
+                                    {% if not space.is_available %}
+                                        <span style="font-size: 12px; background: #e5e7eb; color: #374151; padding: 2px 6px; border-radius: 4px; margin-left: 8px;">Archived</span>
+                                    {% endif %}
+                                </h3>
+                                <div style="color: var(--muted); font-size: 14px;">{{ space.location }}</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <a href="{% url 'edit_parking_space' space.pk %}" style="font-size: 14px; font-weight: 600; text-decoration: underline;">Edit</a>
+
+                            <form action="{% url 'toggle_archive_listing' space.pk %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" style="background: none; border: none; font-weight: 600; cursor: pointer; font-size: 14px; color: var(--text); text-decoration: underline;">
+                                    {% if space.is_available %}Archive{% else %}Activate{% endif %}
+                                </button>
+                            </form>
+
+                            <form action="{% url 'delete_parking_space' space.pk %}" method="post" onsubmit="return confirm('Are you sure you want to delete this listing? This cannot be undone.');">
+                                {% csrf_token %}
+                                <button type="submit" style="color: #c13515; background: none; border: none; font-weight: 600; cursor: pointer; font-size: 14px;">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: var(--muted);">You haven't listed any spaces yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Bookings Section -->
+    <h2 style="margin-bottom: 24px;">Booking Requests</h2>
     {% if bookings %}
         <div style="display: flex; flex-direction: column; gap: 16px;">
             {% for booking in bookings %}
