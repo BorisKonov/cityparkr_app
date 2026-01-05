@@ -1,4 +1,39 @@
+
 {% extends 'base.html' %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'marketplace/style.css' %}">
+    <title>CityParkr</title>
+</head>
+<body>
+    <header class="topbar">
+    <div class="brand">CityParkr</div>
+
+    <div class="search-bar">
+        <span>Anywhere</span>
+        <span class="divider"></span>
+        <span>Any time</span>
+        <span class="divider"></span>
+        <span>Any price</span>
+        <span class="search-icon">🔍</span>
+    </div>
+
+    <div class="header-actions">
+    <a class="list-btn" href="{% url 'add_parking_space' %}">List your space</a>
+
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Log out</button>
+        </form>
+    {% endif %}
+</div>
+
+</header>
+
 
 {% block content %}
 <section class="hero">
