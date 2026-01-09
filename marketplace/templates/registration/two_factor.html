@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Two-step verification - CityParkr{% endblock %}
+
+{% block content %}
+<div class="form-card" style="max-width: 480px;">
+  <h2 style="margin-bottom: 8px;">Two-step verification</h2>
+  <p style="color: var(--muted); margin-bottom: 24px;">
+    We sent a code to your email. Enter it to finish logging in.
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="code">Verification code</label>
+      <input type="text" name="code" id="code" maxlength="6" required>
+    </div>
+
+    <button class="btn-primary" type="submit">Verify</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Verify your email - CityParkr{% endblock %}
+
+{% block content %}
+<div class="form-card" style="max-width: 560px;">
+  <h2 style="margin-bottom: 8px;">Check your email</h2>
+  <p style="color: var(--muted); margin-bottom: 16px;">
+    We sent a verification link to <strong>{{ email }}</strong>.
+  </p>
+
+  <p style="color: var(--muted); margin-bottom: 16px;">
+    Open the email and click the link to activate your account. If you don’t see it, check your spam folder.
+  </p>
+
+  <p style="font-size: 14px;">
+    Back to <a href="{% url 'login' %}" style="text-decoration: underline; font-weight: 600;">log in</a>
+  </p>
+</div>
+{% endblock %}

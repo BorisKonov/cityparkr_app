@@ -19,4 +19,13 @@ urlpatterns = [
     # Renter routes
     path('my-bookings/', views.my_bookings, name='my_bookings'),
     path('my-bookings/<int:booking_id>/cancel/', views.cancel_booking, name='cancel_booking'),
+
+    # Authentication routes
+    path("signup/", views.signup, name="signup"),
+    path("verify/<uidb64>/<token>/", views.verify_email, name="verify_email"),
+
+    path("login/", views.login_step_one, name="site_login"),
+    path("login/code/", views.login_step_two, name="login_step_two"),
+    path("verify/sent/", views.verification_sent, name="verification_sent"),
+
 ]

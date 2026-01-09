@@ -6,22 +6,118 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .models import ParkingSpace, ParkingImage, Booking
 from .forms import ParkingSpaceForm, ParkingSpaceImageForm, BookingForm, CustomUserCreationForm
+from django.conf import settings
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.urls import reverse
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
+import random
 
 def custom_logout(request):
     logout(request)
     return redirect('home')
 
 def signup(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
-            messages.success(request, "Welcome to CityParkr!")
-            return redirect('home')
+
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            verify_url = request.build_absolute_uri(
+                reverse("verify_email", kwargs={"uidb64": uid, "token": token})
+            )
+
+            send_mail(
+                subject="Verify your CityParkr email",
+                message=f"Hi {user.username},\n\nVerify your email by clicking:\n{verify_url}\n\nIf you did not create this account, ignore this email.",
+                from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                recipient_list=[user.email],
+            )
+
+            request.session["pending_verification_email"] = user.email
+            return redirect("verification_sent")
+
     else:
         form = CustomUserCreationForm()
-    return render(request, 'registration/signup.html', {'form': form})
+
+    return render(request, "registration/signup.html", {"form": form})
+
+def verify_email(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, "Email verified! You can now log in.")
+        return redirect("site_login")
+
+    messages.error(request, "Verification link is invalid or expired.")
+    return redirect("signup")
+
+def login_step_one(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+
+            if not user.is_active:
+                messages.error(request, "You must verify your email before logging in.")
+                return redirect("login")
+
+            code = "".join([str(random.randint(0, 9)) for _ in range(6)])
+
+            request.session["pending_2fa_user_id"] = user.id
+            request.session["pending_2fa_code"] = code
+
+            send_mail(
+                subject="Your CityParkr login code",
+                message=f"Your login code is: {code}\n\nIf you did not try to log in, please change your password.",
+                from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                recipient_list=[user.email],
+            )
+
+            return redirect("login_step_two")
+    else:
+        form = AuthenticationForm(request)
+
+    return render(request, "registration/login.html", {"form": form})
+
+def login_step_two(request):
+    if "pending_2fa_user_id" not in request.session:
+        return redirect("login")
+
+    if request.method == "POST":
+        entered = request.POST.get("code", "").strip()
+        real = request.session.get("pending_2fa_code")
+
+        if entered == real:
+            user_id = request.session["pending_2fa_user_id"]
+            user = User.objects.get(id=user_id)
+
+            request.session.pop("pending_2fa_user_id", None)
+            request.session.pop("pending_2fa_code", None)
+
+            login(request, user)
+            messages.success(request, "Logged in successfully.")
+            return redirect("home")
+
+        messages.error(request, "Invalid code. Please try again.")
+
+    return render(request, "registration/two_factor.html")
+
+def verification_sent(request):
+    email = request.session.get("pending_verification_email", "")
+    return render(request, "registration/verification_sent.html", {"email": email})
 
 def hello_parking(request):
     return HttpResponse("Hello Parking World!")

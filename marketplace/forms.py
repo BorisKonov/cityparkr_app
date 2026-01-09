@@ -9,14 +9,25 @@ from django.contrib.auth.models import User
 
 # --- Custom Signup Form ---
 class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username',)
-        field_classes = {'username': forms.CharField}
+        fields = ("username", "email")
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['username'].help_text = 'Letters, digits and @/./+/-/_ only.'
+    def clean_email(self):
+        email = self.cleaned_data["email"].lower().strip()
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("An account with this email already exists.")
+        return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data["email"].lower().strip()
+        user.is_active = False  # block login until email is verified
+        if commit:
+            user.save()
+        return user
 
 # --- Custom DateTime Field for Quarter-Hour Selection ---
 
